@@ -17,7 +17,8 @@ public class LoginInterceptor implements HandlerInterceptor {
        else
             session.setAttribute("employee","请先登录");
             System.out.println("请求转发");
-            request.getRequestDispatcher("D:\\Java\\reggie-take-out\\src\\main\\resources\\backend\\page\\login\\login.html").forward(request,response);
+            //request.getRequestDispatcher("D:\\Java\\reggie-take-out\\src\\main\\resources\\backend\\page\\login\\login.html").forward(request,response);
+            response.sendRedirect("backend/page/login/login.html");
             return false;
         }
 
