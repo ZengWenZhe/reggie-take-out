@@ -1,8 +1,6 @@
 package zwz.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
@@ -15,6 +13,7 @@ import zwz.reggie.entity.Employee;
 import zwz.reggie.service.EmployeeService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 
 @Slf4j
 @RestController
@@ -52,5 +51,21 @@ public class EmployeeController {
     public Result<String> logout(HttpServletRequest request){
         request.getSession().removeAttribute("employee");
         return Result.success("退出成功！");
+    }
+
+
+    //新增员工
+    @PostMapping
+    public Result<String> employee(HttpServletRequest request,@RequestBody Employee employee){
+        employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));//设置初始密码,用md5加密
+        employee.setCreateTime(LocalDateTime.now());        //获取当前的时间
+        employee.setUpdateTime(LocalDateTime.now());
+        Long empId = (Long) request.getSession().getAttribute("employee"); //获得创建人，上面已经把登录的信息放在session中了
+
+        employee.setCreateUser(empId);
+        employee.setUpdateUser(empId);
+        log.info(employee.toString()+"employee的信息-------------");
+        employeeService.save(employee);
+        return Result.success("新增员工成功！");
     }
 }

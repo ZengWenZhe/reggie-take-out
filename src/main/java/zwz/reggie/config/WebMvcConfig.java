@@ -17,9 +17,9 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         registry.addResourceHandler("/front/**").addResourceLocations("classpath:/front/");
     }
 
-    @Override
+   /* @Override
     protected void addInterceptors(InterceptorRegistry registry) {
         log.info("成功进来到拦截器");
-        registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/**");
-    }
+        registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/**").excludePathPatterns("/backend/**,/front/**");
+    }*/
 }

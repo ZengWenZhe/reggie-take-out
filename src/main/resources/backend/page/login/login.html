@@ -103,7 +103,7 @@
               if (String(res.code) === '1') {  //  1:表示登录成功，具体的约定由后端实现
                 //  将res的数据 转化为JSON 保存在前端 localStorage
                 localStorage.setItem('userInfo',JSON.stringify(res.data))
-                window.location.href= '/backend/index.html'
+                window.location.href= '../../index.html'
               } else {
                 this.$message.error(res.msg)
                 this.loading = false
