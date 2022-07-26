@@ -1,13 +1,12 @@
 package zwz.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 import zwz.reggie.common.Result;
 import zwz.reggie.entity.Employee;
 import zwz.reggie.service.EmployeeService;
@@ -28,7 +27,6 @@ public class EmployeeController {
         password = DigestUtils.md5DigestAsHex(password.getBytes());
         LambdaQueryWrapper<Employee> queryWraper = new LambdaQueryWrapper<>();
         queryWraper.eq(Employee::getUsername,employee.getUsername());
-
         Employee emp=employeeService.getOne(queryWraper);
         if(emp==null){
             return  Result.error("用户名不存在！");
@@ -68,4 +66,52 @@ public class EmployeeController {
         employeeService.save(employee);
         return Result.success("新增员工成功！");
     }
+
+    //员工信息分页查询
+    @GetMapping("/page")
+    public Result<Page> page(int page,int pageSize,String name){
+        log.info("page={},pageSize={},name={}",page,pageSize,name);
+        //构造分页器
+        Page pageInfo=new Page(page,pageSize);
+
+        //构造条件构造器
+        LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper();
+
+        //添加过滤条件
+        queryWrapper.like(!StringUtils.isEmpty(name),Employee::getName,name);
+
+        //添加排序条件
+        queryWrapper.orderByDesc(Employee::getUpdateTime);
+
+        //执行查询
+        employeeService.page(pageInfo,queryWrapper);
+
+        return Result.success(pageInfo);
+    }
+
+
+    //修改员工状态  传进来id 和状态
+    @PutMapping
+    public Result<String> update(HttpServletRequest request,@RequestBody Employee employee){
+        log.info(employee.toString());
+        long employeeId = (long)request.getSession().getAttribute("employee");
+        employee.setUpdateUser(employeeId);
+        employee.setUpdateTime(LocalDateTime.now());
+        employeeService.updateById(employee);
+        return Result.success("员工信息修改成功！");
+    }
+
+
+    //编辑员工信息
+    @GetMapping("/{id}")
+    public Result<Employee> getId(@PathVariable Long id){
+        log.info("{}+------------------------",id);
+        LambdaQueryWrapper<Employee> queryWraper = new LambdaQueryWrapper<>();
+        queryWraper.eq(Employee::getId,id);
+        Employee one = employeeService.getOne(queryWraper);
+        return Result.success(one);
+    }
+
+
+
 }
