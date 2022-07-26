@@ -55,7 +55,6 @@ public class LoginCheckFilter implements Filter {
             // 自定义元数据对象处理器 MyMetaObjectHandler中需要使用 登录用户id
             //   通过ThreadLocal set和get用户id
             BaseContext.setCurrentId(empId);
-
             filterChain.doFilter(request,response);
             return;
         }
