@@ -7,8 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import zwz.reggie.common.Result;
 import zwz.reggie.entity.Category;
+import zwz.reggie.entity.Dish;
 import zwz.reggie.service.CategoryService;
-import zwz.reggie.service.EmployeeService;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -51,6 +55,21 @@ public class CategoryController {
         log.info("id={}",ids);
         categoryService.remove(ids);
         return Result.success("已经成功删除菜品信息！");
+    }
+
+    //新增菜品，菜品分类的下拉框
+    @GetMapping("/list")
+    public Result<List> list(Category category){  //这里本来接受的时type类型参数，但是转化成category好操作
+        //log.info("type={}",type);
+        LambdaQueryWrapper<Category> categoryLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        //非空等值查询
+        categoryLambdaQueryWrapper.eq(category.getType()!=null,Category::getType,category.getType());
+        //按排序升序，如果排序一样按照更新时间降序
+        categoryLambdaQueryWrapper.orderByAsc(Category::getSort).orderByDesc(Category::getUpdateTime);
+        //封装到list集合
+        List<Category> list = categoryService.list(categoryLambdaQueryWrapper);
+        return Result.success(list);
+
     }
 
 

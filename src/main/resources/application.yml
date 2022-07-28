@@ -33,5 +33,5 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: ASSIGN_ID
-#upload:
-#  filePath: E:\maven_project\mydelivery\project_images\img
+upload:
+  filePath: D:\Java\reggie-take-out\project_images\

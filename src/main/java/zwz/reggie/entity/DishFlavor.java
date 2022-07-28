@@ -3,6 +3,7 @@ package zwz.reggie.entity;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
+import zwz.reggie.dto.DishDto;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
