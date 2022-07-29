@@ -8,11 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import zwz.reggie.common.Result;
 import zwz.reggie.dto.DishDto;
+import zwz.reggie.dto.SetmealDto;
 import zwz.reggie.entity.Category;
 import zwz.reggie.entity.Dish;
+import zwz.reggie.entity.Setmeal;
 import zwz.reggie.service.CategoryService;
 import zwz.reggie.service.DishFlavorService;
 import zwz.reggie.service.DishService;
+import zwz.reggie.service.SetMealService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +28,8 @@ public class DishController {
     private DishService dishService;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private SetMealService setMealService;
 
     //  分页展示菜品信息
     // dish/page?page=1&pageSize=10&name=122334,name 是搜索框中的输入值
@@ -117,6 +122,19 @@ public class DishController {
         dishService.batchDeleteByIds(ids);
 
         return Result.success("成功删除菜品！");
+    }
+
+
+    //新增套餐时添加菜品下拉框数据映射
+    @GetMapping("/list")
+    public Result<List<Dish>> addMeal(Dish dish){
+        LambdaQueryWrapper<Dish> queryWrapper=new LambdaQueryWrapper();
+        queryWrapper.eq(dish !=null,Dish::getCategoryId,dish.getCategoryId());
+        queryWrapper.eq(Dish::getStatus,1);
+        queryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
+        List<Dish> list = dishService.list(queryWrapper);
+        return Result.success(list);
+
     }
 
 

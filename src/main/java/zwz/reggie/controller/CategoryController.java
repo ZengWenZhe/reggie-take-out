@@ -57,7 +57,7 @@ public class CategoryController {
         return Result.success("已经成功删除菜品信息！");
     }
 
-    //新增菜品，菜品分类的下拉框
+    //新增菜品，菜品分类的下拉框,这里和新增套餐，套餐分类的的下拉框是一个处理地址，type方式不同
     @GetMapping("/list")
     public Result<List> list(Category category){  //这里本来接受的时type类型参数，但是转化成category好操作
         //log.info("type={}",type);
