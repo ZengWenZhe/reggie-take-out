@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 import zwz.reggie.common.MyCustomException;
 import zwz.reggie.common.Result;
@@ -63,6 +64,27 @@ public class SetMealController {
         setMealService.saveWithDish(setmealDto);
         return Result.success("修改成功！");
     }
+
+    // 前端发送的请求：http://localhost:8181/setmeal/list?categoryId=1516353794261180417&status=1
+    // 注意: 请求后的参数 是以key-value键值对的方式 传入，而非JSON格式，不需要使用@RequestBody 来标注，
+    //   只需要用包含 参数(key)的实体对象接收即可
+    @GetMapping("/list")  // 在消费者端 展示套餐信息
+    @Cacheable(value = "setmealCache",key = "#setmeal.categoryId+'_' +#setmeal.status")
+    public Result<List<Setmeal>> list(Setmeal setmeal){
+        LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
+        Long categoryId = setmeal.getCategoryId();
+        Integer status = setmeal.getStatus();
+        queryWrapper.eq(categoryId != null,Setmeal::getCategoryId,categoryId);
+        queryWrapper.eq(status != null,Setmeal::getStatus,status);
+
+        queryWrapper.orderByDesc(Setmeal::getUpdateTime);
+
+        List<Setmeal> setmeals = setMealService.list(queryWrapper);
+
+        return Result.success(setmeals);
+    }
+
+
 
     //删除套餐
     @DeleteMapping

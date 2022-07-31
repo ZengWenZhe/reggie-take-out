@@ -46,10 +46,10 @@ public class UserController {
         //  获取邮箱账号
         String phone = user.getPhone();
 
-        String subject = "迅磊餐购登录验证码";
+        String subject = "哲淇外卖登录验证码";
         if (StringUtils.isNotEmpty(phone)){
             String code = ValidateCodeUtils.generateValidateCode(4).toString();
-            String context = "欢迎使用迅磊餐购，登录验证码为: " + code + ",五分钟内有效，请妥善保管!";
+            String context = "欢迎使用哲淇外卖点购，登录验证码为: " + code + ",五分钟内有效，请妥善保管!";
 
              log.info("code={}",code);
 
