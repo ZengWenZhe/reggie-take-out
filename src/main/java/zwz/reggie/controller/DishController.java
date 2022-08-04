@@ -20,6 +20,7 @@ import zwz.reggie.service.DishService;
 import zwz.reggie.service.SetMealService;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -89,6 +90,10 @@ public class DishController {
     public Result<String> add(@RequestBody DishDto dishDto) {
         log.info("菜品的名字是={}", dishDto.getName());
         dishService.saveWithFlavor(dishDto);
+
+        // 清理 后台修改分类 下面的菜品缓存数据
+        String key = "dish_" + dishDto.getCategoryId() + "_" + dishDto.getStatus();
+        redisTemplate.delete(key);
         return Result.success("成功添加");
     }
 
@@ -97,8 +102,11 @@ public class DishController {
     @PutMapping
     public Result<String> update(@RequestBody DishDto dishDto){
         log.info(dishDto.toString());
-
         dishService.updateWithFlavor(dishDto);
+
+        // 清理 后台修改分类 下面的菜品缓存数据
+        String key = "dish_" + dishDto.getCategoryId() + "_" + dishDto.getStatus();
+        redisTemplate.delete(key);
         return Result.success("修改菜品操作成功！");
     }
 

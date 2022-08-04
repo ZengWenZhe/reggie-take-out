@@ -17,7 +17,7 @@ spring:
     default-encoding: UTF-8
 
   redis:
-    host: localhost # 本地IP 或是 虚拟机IP
+    host: 120.76.40.211 # 本地IP 或是 虚拟机IP
     port: 6379
 #    password: root
     database: 0  # 默认使用 0号db
