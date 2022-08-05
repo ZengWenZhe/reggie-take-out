@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 import zwz.reggie.common.MyCustomException;
@@ -16,6 +17,7 @@ import zwz.reggie.service.SetmealDishService;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Slf4j
 @RestController
@@ -35,8 +37,10 @@ public class SetMealController {
     }
 
 
+
     //将新增套餐的基本信息以及关联的菜品信息保存到数据库
     @PostMapping
+    @CacheEvict(value = "setmealCache",allEntries = true)
     public Result<String> addMeal(@RequestBody SetmealDto setmealDto){
         log.info(setmealDto.toString());
         setMealService.saveWithDish(setmealDto);
@@ -68,6 +72,7 @@ public class SetMealController {
     // 前端发送的请求：http://localhost:8181/setmeal/list?categoryId=1516353794261180417&status=1
     // 注意: 请求后的参数 是以key-value键值对的方式 传入，而非JSON格式，不需要使用@RequestBody 来标注，
     //   只需要用包含 参数(key)的实体对象接收即可
+
     @GetMapping("/list")  // 在消费者端 展示套餐信息
     @Cacheable(value = "setmealCache",key = "#setmeal.categoryId+'_' +#setmeal.status")
     public Result<List<Setmeal>> list(Setmeal setmeal){
@@ -88,6 +93,7 @@ public class SetMealController {
 
     //删除套餐
     @DeleteMapping
+    @CacheEvict(value = "setmealCache",allEntries = true)   //  删除套餐，就要删除套餐相关的所有缓存数据
     public Result<String> delete(@RequestParam("ids") List<Long> ids){
         setMealService.DeleteSetmeal(ids);
         return Result.success("成功删除套餐！");
